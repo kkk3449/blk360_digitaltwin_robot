@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CycloneDDS xmlns="https://cdds.io/config"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd">
+  <Domain Id="any">
+    <General>
+      <Interfaces>
+        <!-- <NetworkInterface name="enp44s0" address="192.168.31.56" multicast="default"/> -->
+        <!-- <NetworkInterface address="192.168.31.56"/> -->
+        <NetworkInterface address="192.168.10.66" multicast="default"/>
+      </Interfaces>
+      <!-- MaxMessageSize: default 14720 B. For large data (point clouds, images) use 64kB or more. -->
+      <!-- For unstable networks, keep lower (e.g. 1472 B) to avoid IP fragmentation. -->
+      <MaxMessageSize>64 kB</MaxMessageSize>
+    </General>
+    <Discovery>
+      <Peers>
+        <Peer address="192.168.31.25"/>
+        <Peer address="192.168.31.56"/>
+        <!-- <Peer address="192.168.10.66"/> -->
+        <Peer address="192.168.31.103"/>
+        <Peer address="192.168.31.77"/>
+        <Peer address="192.168.31.234"/>
+        <!-- 라이다(.10.88/.10.99)와 Beckhoff(.10.151)는 DDS 장비가 아님 - Peer 등록 금지.
+             (등록 시 전체 ROS 노드가 디스커버리 패킷을 초당 ~140개 쏴서 라이다 네트워크 스택이 주기적으로 다운됨. 2026-07-14 확인) -->
+      </Peers>
+      <!-- LeaseDuration: participant alive timeout. Default 10s; longer reduces disconnects on hiccups. -->
+      <LeaseDuration>30 s</LeaseDuration>
+      <!-- SPDPInterval: discovery packet interval. Default ~80% of LeaseDuration. -->
+      <SPDPInterval>10 s</SPDPInterval>
+      <ParticipantIndex>auto</ParticipantIndex>
+    </Discovery>
+    <!-- Internal: socket buffers (require sysctl 99-cyclonedds.conf) + retransmit tuning. -->
+    <Internal>
+      <SocketReceiveBufferSize min="2 MiB" max="4 MiB"/>
+      <SocketSendBufferSize min="2 MiB" max="4 MiB"/>
+      <MaxQueuedRexmitMessages>500</MaxQueuedRexmitMessages>
+      <MaxQueuedRexmitBytes>2 MiB</MaxQueuedRexmitBytes>
+    </Internal>
+  </Domain>
+</CycloneDDS>
